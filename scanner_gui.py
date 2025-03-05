@@ -19,7 +19,7 @@ start_time = 0
 # Função para testar a conectividade do IP
 def ping_host(ip):
     try:
-        response = subprocess.run(['ping', '-n', '1', ip], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        response = subprocess.run(['ping', '-n', '1', ip], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, creationflags=subprocess.CREATE_NO_WINDOW)
         return response.returncode == 0
     except Exception as e:
         log_message(f"Erro ao pingar {ip}: {e}")
