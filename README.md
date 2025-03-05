@@ -1,0 +1,1 @@
+# Scanner-de-Hardware-em-Rede
