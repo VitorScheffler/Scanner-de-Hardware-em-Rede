@@ -8,6 +8,7 @@ import os
 from time import sleep, time
 from tkinter import filedialog
 from concurrent.futures import ThreadPoolExecutor
+from PIL import Image, ImageTk
 
 # Variáveis globais de controle para a varredura
 scan_in_progress = False
@@ -114,11 +115,25 @@ def scan_network_and_collect_data(start_ip, end_ip, username, password):
             # Atualiza a barra de progresso independentemente do sucesso ou falha
             progress_bar["value"] = idx + 1
             root.update_idletasks()
+
     # Marca o tempo de término da varredura
     end_time = time()
-    # Calcula a duração
-    duration = round(end_time - start_time, 2)
-    log_message(f"\nVarredura concluída! Tempo de execução: {duration} segundos.")
+
+    # Calcula a duração corretamente
+    duration = round(end_time - start_time)
+
+    if duration >= 3600:
+        formatted_duration = f"{duration // 3600} horas, {(duration % 3600) // 60} minutos e {duration % 60} segundos"
+    elif duration >= 60:
+        formatted_duration = f"{duration // 60} minutos e {duration % 60} segundos"
+    else:
+        formatted_duration = f"{duration} segundos"
+
+    log_message(f"\nVarredura concluída! Tempo de execução: {formatted_duration}.")
+    log_message(f"Total de IPs verificados: {len(ip_list)}")
+    log_message(f"Total de dispositivos encontrados: {len(results)}")
+    progress_bar["value"] = 0
+    
 
 # Função para iniciar a varredura
 def start_scan():
@@ -176,6 +191,7 @@ def cancel_scan():
     global scan_in_progress
     scan_in_progress = False
     log_message("Varredura cancelada.")
+    progress_bar["value"] = 0
 
 # Criar a janela principal
 root = tk.Tk()
@@ -252,11 +268,11 @@ table.grid(row=1, column=0, columnspan=2, padx=5, pady=5, sticky="nsew")
 
 # Adiciona a barra de progresso no layout
 progress_bar = ttk.Progressbar(root, orient="horizontal", length=400, mode="determinate")
-progress_bar.grid(row=8, column=0, columnspan=2, padx=5, pady=5, sticky="ew")
+progress_bar.grid(row=7, column=0, columnspan=2, padx=5, pady=0, sticky="ew")
 
 # Frame para os botões (exportar e cancelar)
 button_frame = tk.Frame(root)
-button_frame.grid(row=7, column=0, columnspan=2, pady=10)
+button_frame.grid(row=8, column=0, columnspan=2, pady=25)
 
 # Botão para exportar CSV
 export_button = tk.Button(button_frame, text="Exportar para CSV", command=export_to_csv, width=15)
